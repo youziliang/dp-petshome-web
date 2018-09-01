@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+					    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+					    http://www.springframework.org/schema/context 
+					    http://www.springframework.org/schema/context/spring-context-4.3.xsd
+					    http://www.springframework.org/schema/mvc 
+					    http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+					    http://www.springframework.org/schema/cache
+        http://www.springframework.org/schema/cache/spring-cache.xsd">
+	<!-- 以上.xsd文件，不加版本号，表示默认使用当前版本 -->
+
+	<!-- Spring 注解配置 -->
+	<context:annotation-config />
+
+	<!--扫描注解 -->
+	<context:component-scan base-package="com.dp.petshome.*">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- springMVC 注解配置 -->
+	<mvc:annotation-driven />
+
+	<bean id="propertyConfigurer" class="com.dp.petshome.utils.PropertyUtil">
+		<property name="order" value="1" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath*:env.properties</value>
+				<value>classpath*:jdbc.properties</value>
+				<value>classpath*:wechat.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 启用缓存 -->
+	<cache:annotation-driven cache-manager="cacheManager" />
+	<!--声明一个缓存管理器（EhCacheCacheManager） 这里的实现代码是通过传入EhCache的CacheManager实例实现的 -->
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+		p:cache-manager-ref="ehcache" />
+	<!--这里并不是EhCacheManagerFactoryBean的实例，而是EhCache中CacheManager的一个实例 -->
+	<!--因为Spring和EhCache都定义了CacheManager类型 -->
+	<bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:/spring/ehcache.xml" />
+		<property name="shared" value="true" />
+	</bean>
+
+	<import resource="classpath*:spring/datasource-config.xml" />
+</beans>

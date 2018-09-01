@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context-4.3.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+						http://www.springframework.org/schema/tx
+						http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- Hikari Datasource 配置项 -->
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="poolName" value="springHikariCP" />
+		<property name="connectionTestQuery" value="SELECT 1" />
+		<property name="dataSourceClassName" value="${mysql.jdbc.dataSourceClassName}" />
+		<!-- 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count) -->
+		<property name="maximumPoolSize" value="60" />
+		<!-- 最小空闲线程个数 -->
+		<property name="minimumIdle" value="10" />
+		<!-- 自动提交 -->
+		<property name="autoCommit" value="false" />
+		<!-- 连接只读数据库时配置为true， 保证安全 -->
+		<property name="readOnly" value="false" />
+		<!-- 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒 -->
+		<!-- <property name="connectionTimeout" value="30000" /> -->
+		<!-- 一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟 -->
+		<!-- <property name="idleTimeout" value="600000" /> -->
+		<!-- 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒，参考MySQL 
+			wait_timeout参数（show variables like '%timeout%';） -->
+		<!-- <property name="maxLifetime" value="1800000" /> -->
+
+		<!-- 不使用老式的jdbc driver class：而使用datasource配置 -->
+		<property name="dataSourceProperties">
+			<props>
+				<prop key="url">${mysql.jdbc.url}</prop>
+				<prop key="user">${mysql.jdbc.username}</prop>
+				<prop key="password">${mysql.jdbc.password}</prop>
+				<!-- enable prepared statements Cache -->
+				<prop key="cachePrepStmts">true</prop>
+				<!-- sets the number of prepared statements that the MySQL driver will 
+					cache per connection -->
+				<prop key="prepStmtCacheSize">250</prop>
+				<!-- the maximum length of a prepared SQL statement that the driver will 
+					cache -->
+				<prop key="prepStmtCacheSqlLimit">2048</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- hikari 数据源 -->
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource"
+		destroy-method="close">
+		<constructor-arg ref="hikariConfig" />
+	</bean>
+
+	<!-- Mybatis 属性配置 -->
+	<bean id="sqlSessionFactoryMysql" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- Mybatis 数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- Mybatis 配置文件位置 -->
+		<property name="configLocation" value="classpath:/spring/mybatis.xml" />
+		<!-- Mybatis sql文件位置 -->
+		<property name="mapperLocations">
+			<value>classpath*:com/dp/petshome/persistence/mapper/*.xml</value>
+		</property>
+	</bean>
+
+	<bean id="sqlSessionMysql" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactoryMysql" />
+	</bean>
+
+	<!-- 扫描指定包以获取映射器 -->
+	<bean id="mapperConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.dp.petshome.persistence.dao" />
+		<property name="sqlSessionTemplateBeanName" value="sqlSessionMysql" />
+	</bean>
+
+	<!-- JDBC事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 连接事务的注解配置 -->
+	<tx:annotation-driven />
+	<aop:config>
+		<aop:pointcut id="allManagerMethod"
+			expression="execution(* com.dp.petshome.service..*.* (..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="allManagerMethod" />
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+</beans>

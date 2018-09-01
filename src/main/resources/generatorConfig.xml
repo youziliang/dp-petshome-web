@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+	<classPathEntry
+		location="C:\repository\mysql\mysql-connector-java\5.1.38/mysql-connector-java-5.1.38.jar" />
+
+	<context id="MysqlTables" targetRuntime="MyBatis3">
+
+		<!-- 生成的pojo将实现Serializable -->
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+		<!-- 去除字段注释 -->
+		<commentGenerator>
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://127.0.0.1:3306/petshome" userId="root"
+			password="youziliang">
+		</jdbcConnection>
+
+		<!--允许数值类型转换成不同类型,否则都映射为BigDecimal -->
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="false" />
+		</javaTypeResolver>
+
+		<!-- TODO 模型文件 -->
+		<javaModelGenerator targetPackage="com.dp.petshome.persistence.model"
+			targetProject="dp-petshome-web">
+			<property name="enableSubPackages" value="true" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+
+		<!-- TODO XML映射文件 -->
+		<sqlMapGenerator targetPackage="com.dp.petshome.persistence.mapper"
+			targetProject="dp-petshome-web">
+			<property name="enableSubPackages" value="true" />
+		</sqlMapGenerator>
+
+		<!-- DAO文件(mapper接口) -->
+		<javaClientGenerator targetPackage="com.dp.petshome.persistence.dao"
+			targetProject="dp-petshome-web" type="XMLMAPPER">
+			<property name="enableSubPackages" value="true" />
+		</javaClientGenerator>
+
+
+		<!-- TODO 数据库表 -->
+		<table tableName="t_order" domainObjectName="Order"
+			enableCountByExample="false" enableUpdateByExample="false"
+			enableDeleteByExample="false" enableSelectByExample="false"
+			selectByExampleQueryId="false" enableDeleteByPrimaryKey="false">
+			<!-- useActualColumnNames属性是为了使生成的model字段与数据库的字段大小写不一致 -->
+			<property name="useActualColumnNames" value="false" />
+			<!-- <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" /> -->
+		</table>
+
+	</context>
+
+</generatorConfiguration>
