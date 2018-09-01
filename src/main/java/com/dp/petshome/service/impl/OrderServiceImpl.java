@@ -134,7 +134,7 @@ public class OrderServiceImpl implements OrderService {
 			// 到店付
 			price = 0;
 		}
-		log.info("订单: {} 类型为{}, 需要扣除{}余额, 需要增加{}积分", openid, order.getPayment(), price, scoreInSuit);
+		log.info("订单: {} 类型为{}, 需要扣除{}余额, 需要增加{}积分", order.getId(), order.getPayment(), price, scoreInSuit);
 		return userMapper.updateScoreAndBalanceByOpenid(openid, balance - price, scoreInDB + scoreInSuit);
 	}
 
