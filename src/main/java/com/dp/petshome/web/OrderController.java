@@ -100,7 +100,7 @@ public class OrderController {
 			order.setDate(DateUtil.dateStrToTimestamp(date, DateUtil.LONGFMT16));
 			order.setCount(Integer.valueOf(people));
 			order.setSuitId(Integer.valueOf(suitId));
-			order.setPayment(Boolean.valueOf(payment));
+			order.setPayment(StringUtils.equals("0", payment) ? false : true);
 			order.setRemark(remark);
 
 			int reservateResult = orderService.reservate(order);
