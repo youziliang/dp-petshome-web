@@ -18,9 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dp.petshome.enums.HttpStatus;
 import com.dp.petshome.persistence.dto.HttpResult;
 import com.dp.petshome.persistence.model.Activity;
-import com.dp.petshome.persistence.model.Broadcasting;
+import com.dp.petshome.persistence.model.Broadcast;
 import com.dp.petshome.service.ActivityService;
-import com.dp.petshome.service.BroadcastingService;
+import com.dp.petshome.service.BroadcastService;
 import com.dp.petshome.utils.DateUtil;
 import com.dp.petshome.utils.PropertyUtil;
 
@@ -38,7 +38,7 @@ public class PublishController {
 	protected ActivityService activityService;
 
 	@Autowired
-	protected BroadcastingService broadcastingService;
+	protected BroadcastService broadcastService;
 
 	private static final String UPLOAD_ROOT_URL = PropertyUtil.getProperty("domain", "http://www.whatu1.com") + "/img/";
 	// private static final String UPLOAD_ROOT_URL = "http://192.168.0.106/dp-img/";
@@ -114,22 +114,22 @@ public class PublishController {
 	/**
 	 * @Dsecription 發佈通知
 	 */
-	@PostMapping(value = "publishBroadcasting")
+	@PostMapping(value = "publishBroadcast")
 	@ResponseBody
-	public HttpResult<Object> publishBroadcasting(HttpServletRequest request, HttpServletResponse response) {
+	public HttpResult<Object> publishBroadcast(HttpServletRequest request, HttpServletResponse response) {
 
 		HttpResult<Object> result = new HttpResult<Object>();
 
-		Broadcasting broadcasting = new Broadcasting();
+		Broadcast broadcast = new Broadcast();
 		String notice = request.getParameter("notice");
-		broadcasting.setNotice(notice);
+		broadcast.setNotice(notice);
 
-		Integer publishBroadcastingResult = broadcastingService.publishBroadcasting(broadcasting);
-		if (0 < publishBroadcastingResult) {
-			log.info("發佈通知成功: {}", publishBroadcastingResult);
+		Integer publishBroadcastResult = broadcastService.publishBroadcast(broadcast);
+		if (0 < publishBroadcastResult) {
+			log.info("發佈通知成功: {}", publishBroadcastResult);
 			result.setStatus(HttpStatus.SUCCESS.status);
 		} else {
-			log.info("發佈通知失敗: {}", publishBroadcastingResult);
+			log.info("發佈通知失敗: {}", publishBroadcastResult);
 			result.setStatus(HttpStatus.FAIL.status);
 		}
 		return result;
