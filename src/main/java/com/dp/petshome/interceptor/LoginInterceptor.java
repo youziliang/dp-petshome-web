@@ -26,7 +26,7 @@ import com.dp.petshome.utils.PropertyUtil;
 
 /**
  * @Dsecription 登陸攔截器
- * @author DU TODO 未测试
+ * @author DU
  */
 @Component
 public class LoginInterceptor implements HandlerInterceptor {

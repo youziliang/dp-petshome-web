@@ -62,15 +62,11 @@
 	<aop:aspectj-autoproxy />
 
 	<!-- 视图解析器 前后端分离后就用不到了 -->
-	<!-- <bean id="viewResolver"
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView"></property>
-		<property name="prefix" value="/page/"></property>
-		<property name="contentType" value="text/html;charset=utf-8" />
-		<property name="suffix" value=".jsp"></property>
-		<property name="order" value="1"></property>
-	</bean> -->
+	<!-- <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property> 
+		<property name="prefix" value="/page/"></property> <property name="contentType" 
+		value="text/html;charset=utf-8" /> <property name="suffix" value=".jsp"></property> 
+		<property name="order" value="1"></property> </bean> -->
 
 	<!-- 文件上傳配置 -->
 	<bean id="multipartResolver"
@@ -99,6 +95,12 @@
 				<!-- 100M -->
 				<property name="maxSize" value="204800000" />
 			</bean>
+		</mvc:interceptor>
+
+		<!-- 参数校验攔截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="com.dp.petshome.interceptor.LoginInterceptor"></bean>
 		</mvc:interceptor>
 	</mvc:interceptors>
 
