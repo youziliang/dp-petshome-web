@@ -78,6 +78,12 @@
 	</bean>
 
 	<mvc:interceptors>
+		<!-- 参数校验攔截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="com.dp.petshome.interceptor.ValidInterceptor"></bean>
+		</mvc:interceptor>
+
 		<!-- 登陸攔截器 -->
 		<mvc:interceptor>
 			<mvc:mapping path="/wechat/loadUserInfo" />
@@ -97,11 +103,6 @@
 			</bean>
 		</mvc:interceptor>
 
-		<!-- 参数校验攔截器 -->
-		<mvc:interceptor>
-			<mvc:mapping path="/**" />
-			<bean class="com.dp.petshome.interceptor.LoginInterceptor"></bean>
-		</mvc:interceptor>
 	</mvc:interceptors>
 
 </beans>    
