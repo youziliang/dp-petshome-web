@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.dp.petshome.persistence.model.Activity">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="theme" jdbcType="VARCHAR" property="theme" />
+    <result column="deputy" jdbcType="VARCHAR" property="deputy" />
     <result column="date" jdbcType="BIGINT" property="date" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="detail" jdbcType="VARCHAR" property="detail" />
@@ -12,7 +13,7 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, theme, date, address, detail, img, create_time, update_time
+    id, theme, deputy, date, address, detail, img, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -21,12 +22,14 @@
     where id = #{id,jdbcType=INTEGER}
   </select>
   <insert id="insert" parameterType="com.dp.petshome.persistence.model.Activity">
-    insert into t_activity (id, theme, date, 
-      address, detail, img, 
-      create_time, update_time)
-    values (#{id,jdbcType=INTEGER}, #{theme,jdbcType=VARCHAR}, #{date,jdbcType=BIGINT}, 
-      #{address,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    insert into t_activity (id, theme, deputy, 
+      date, address, detail, 
+      img, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{theme,jdbcType=VARCHAR}, #{deputy,jdbcType=VARCHAR}, 
+      #{date,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, 
+      #{img,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.dp.petshome.persistence.model.Activity">
     insert into t_activity
@@ -36,6 +39,9 @@
       </if>
       <if test="theme != null">
         theme,
+      </if>
+      <if test="deputy != null">
+        deputy,
       </if>
       <if test="date != null">
         date,
@@ -63,6 +69,9 @@
       <if test="theme != null">
         #{theme,jdbcType=VARCHAR},
       </if>
+      <if test="deputy != null">
+        #{deputy,jdbcType=VARCHAR},
+      </if>
       <if test="date != null">
         #{date,jdbcType=BIGINT},
       </if>
@@ -89,6 +98,9 @@
       <if test="theme != null">
         theme = #{theme,jdbcType=VARCHAR},
       </if>
+      <if test="deputy != null">
+        deputy = #{deputy,jdbcType=VARCHAR},
+      </if>
       <if test="date != null">
         date = #{date,jdbcType=BIGINT},
       </if>
@@ -113,6 +125,7 @@
   <update id="updateByPrimaryKey" parameterType="com.dp.petshome.persistence.model.Activity">
     update t_activity
     set theme = #{theme,jdbcType=VARCHAR},
+      deputy = #{deputy,jdbcType=VARCHAR},
       date = #{date,jdbcType=BIGINT},
       address = #{address,jdbcType=VARCHAR},
       detail = #{detail,jdbcType=VARCHAR},
@@ -121,11 +134,11 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  
+    
   <select id="selectByNoPerformance" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from t_activity
-    where date > unix_timestamp(now())*1000
+    where date > unix_timestamp(now()) * 1000
   </select>
 </mapper>

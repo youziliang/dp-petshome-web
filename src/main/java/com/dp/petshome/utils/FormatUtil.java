@@ -3,30 +3,31 @@ package com.dp.petshome.utils;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.XMLWriter;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dp.petshome.enums.CharSets;
 
+/**
+ * @Description 格式轉換工具类
+ */
 public class FormatUtil {
 
 	/**
@@ -59,23 +60,16 @@ public class FormatUtil {
 	/**
 	 * @Description XML TO Map
 	 */
+	@SuppressWarnings("unchecked")
 	public static Map<String, Object> xml2Map(String strXML) throws Exception {
 
 		Map<String, Object> map = new HashMap<String, Object>();
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		InputStream stream = new ByteArrayInputStream(strXML.getBytes(CharSets.UTF8));
-		org.w3c.dom.Document doc = documentBuilder.parse(stream);
-		doc.getDocumentElement().normalize();
-		NodeList nodeList = doc.getDocumentElement().getChildNodes();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				org.w3c.dom.Element element = (org.w3c.dom.Element) node;
-				map.put(element.getNodeName(), element.getTextContent());
-			}
+		Document document = DocumentHelper.parseText(strXML);
+		Element root = document.getRootElement();
+		List<Element> elements = root.elements();
+		for (Element element : elements) {
+			map.put(element.getName(), element.getTextTrim());
 		}
-		stream.close();
 		return map;
 	}
 
@@ -84,32 +78,17 @@ public class FormatUtil {
 	 */
 	public static String map2Xml(Map<String, Object> map) throws Exception {
 
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		org.w3c.dom.Document document = documentBuilder.newDocument();
-		org.w3c.dom.Element root = document.createElement("xml");
-		document.appendChild(root);
-		for (String key : map.keySet()) {
-			String value = map.get(key).toString();
-			if (value == null) {
-				value = "";
-			}
-			value = value.trim();
-			org.w3c.dom.Element filed = document.createElement(key);
-			filed.appendChild(document.createTextNode(value));
-			root.appendChild(filed);
+		Document document = DocumentHelper.createDocument();
+		Element root = document.addElement("xml");
+		Set<String> keys = map.keySet();
+		for (String key : keys) {
+			root.addElement(key).addText(map.get(key).toString());
 		}
-		TransformerFactory tf = TransformerFactory.newInstance();
-		Transformer transformer = tf.newTransformer();
-		DOMSource source = new DOMSource(document);
-		transformer.setOutputProperty(OutputKeys.ENCODING, CharSets.UTF8);
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		StringWriter writer = new StringWriter();
-		StreamResult result = new StreamResult(writer);
-		transformer.transform(source, result);
-		String output = writer.getBuffer().toString(); // .replaceAll("\n|\r", "");
-		writer.close();
-		return output;
+		StringWriter stringWriter = new StringWriter();
+		XMLWriter xmlWriter = new XMLWriter(stringWriter);
+		xmlWriter.setEscapeText(false);
+		xmlWriter.write(document);
+		return stringWriter.toString();
 	}
 
 	/**
@@ -136,6 +115,27 @@ public class FormatUtil {
 	public static Map<String, Object> json2Map(String jsonStr) {
 
 		return JSONObject.parseObject(jsonStr, HashMap.class);
+	}
+
+	/**
+	 * @Description base64 To File
+	 */
+	public static File base64ToFile(String base64Str, String filePath, String fileName, Map<Integer, Map<String, Object>> transform) {
+		// 创建文件目录
+		File dir = new File(filePath);
+		if (!dir.exists() && !dir.isDirectory()) {
+			dir.mkdirs();
+		}
+		filePath = StringUtils.endsWith(filePath, "/") ? filePath : filePath + "/";
+		File file = new File(filePath + fileName);
+
+		try (FileOutputStream fos = new FileOutputStream(file, true); BufferedOutputStream bos = new BufferedOutputStream(fos);) {
+			byte[] bytes = Base64.getDecoder().decode(base64Str);
+			bos.write(bytes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return file;
 	}
 
 	/**

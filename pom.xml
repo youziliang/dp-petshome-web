@@ -33,6 +33,8 @@
 		<ehcache.version>2.10.5</ehcache.version>
 		<junit.version>4.12</junit.version>
 		<dbunit.version>2.5.4</dbunit.version>
+		<dom4j.version>1.6.1</dom4j.version>
+		<thumbnailator.version>0.4.8</thumbnailator.version>
 	</properties>
 
 	<dependencies>
@@ -228,6 +230,20 @@
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
 			<version>${dbunit.version}</version>
+		</dependency>
+
+		<!-- xml解析 -->
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>${dom4j.version}</version>
+		</dependency>
+
+		<!-- 圖片編輯 -->
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>${thumbnailator.version}</version>
 		</dependency>
 
 	</dependencies>

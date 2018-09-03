@@ -4,91 +4,101 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Activity implements Serializable {
-	private Integer id;
+    private Integer id;
 
-	private String theme;
+    private String theme;
 
-	private Long date;
+    private String deputy;
 
-	private String address;
+    private Long date;
 
-	private String detail;
+    private String address;
 
-	private String img;
+    private String detail;
 
-	private Date createTime;
+    private String img;
 
-	private Date updateTime;
+    private Date createTime;
 
-	private static final long serialVersionUID = 1L;
+    private Date updateTime;
 
-	public Integer getId() {
-		return id;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getTheme() {
-		return theme;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setTheme(String theme) {
-		this.theme = theme == null ? null : theme.trim();
-	}
+    public String getTheme() {
+        return theme;
+    }
 
-	public Long getDate() {
-		return date;
-	}
+    public void setTheme(String theme) {
+        this.theme = theme == null ? null : theme.trim();
+    }
 
-	public void setDate(Long date) {
-		this.date = date;
-	}
+    public String getDeputy() {
+        return deputy;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public void setDeputy(String deputy) {
+        this.deputy = deputy == null ? null : deputy.trim();
+    }
 
-	public void setAddress(String address) {
-		this.address = address == null ? null : address.trim();
-	}
+    public Long getDate() {
+        return date;
+    }
 
-	public String getDetail() {
-		return detail;
-	}
+    public void setDate(Long date) {
+        this.date = date;
+    }
 
-	public void setDetail(String detail) {
-		this.detail = detail == null ? null : detail.trim();
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public String getImg() {
-		return img;
-	}
+    public void setAddress(String address) {
+        this.address = address == null ? null : address.trim();
+    }
 
-	public void setImg(String img) {
-		this.img = img == null ? null : img.trim();
-	}
+    public String getDetail() {
+        return detail;
+    }
 
-	public Date getCreateTime() {
-		return createTime;
-	}
+    public void setDetail(String detail) {
+        this.detail = detail == null ? null : detail.trim();
+    }
 
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
+    public String getImg() {
+        return img;
+    }
 
-	public Date getUpdateTime() {
-		return updateTime;
-	}
+    public void setImg(String img) {
+        this.img = img == null ? null : img.trim();
+    }
 
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
-	}
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
 	@Override
 	public String toString() {
-		return "Activity [id=" + id + ", theme=" + theme + ", date=" + date + ", address=" + address + ", detail="
-				+ detail + ", img=" + img + ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
+		return "Activity [id=" + id + ", theme=" + theme + ", deputy=" + deputy + ", date=" + date + ", address=" + address + ", detail=" + detail + ", img=" + img
+				+ ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
 	}
 }

@@ -48,7 +48,7 @@
 
 
 		<!-- TODO 数据库表 -->
-		<table tableName="t_order" domainObjectName="Order"
+		<table tableName="t_activity" domainObjectName="Activity"
 			enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false"
 			selectByExampleQueryId="false" enableDeleteByPrimaryKey="false">

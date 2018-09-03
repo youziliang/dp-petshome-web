@@ -43,6 +43,9 @@ import org.springframework.http.HttpStatus;
 
 import com.dp.petshome.enums.CharSets;
 
+/**
+ * @Description 網絡請求
+ */
 @SuppressWarnings("deprecation")
 public class HttpUtil {
 
@@ -89,16 +92,14 @@ public class HttpUtil {
 	/**
 	 * @Description http请求
 	 */
-	public static String request(String url, String methodType, Map<String, Object> paramsMap, List<Header> headerList,
-			Boolean openSSL) {
+	public static String request(String url, String methodType, Map<String, Object> paramsMap, List<Header> headerList, Boolean openSSL) {
 		return request(url, methodType, paramsMap, headerList, null, openSSL);
 	}
 
 	/**
 	 * @Description http请求
 	 */
-	public static String request(String url, String methodType, Map<String, Object> paramsMap,
-			List<Header> headerList) {
+	public static String request(String url, String methodType, Map<String, Object> paramsMap, List<Header> headerList) {
 		return request(url, methodType, paramsMap, headerList, null, false);
 	}
 
@@ -112,8 +113,7 @@ public class HttpUtil {
 	/**
 	 * @Description http请求
 	 */
-	public static String request(String url, String methodType, Map<String, Object> paramsMap, List<Header> headerList,
-			String encoding, Boolean openSSL) {
+	public static String request(String url, String methodType, Map<String, Object> paramsMap, List<Header> headerList, String encoding, Boolean openSSL) {
 		String body = "";
 		try {
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -125,8 +125,7 @@ public class HttpUtil {
 				// 将paramsMap参数封装到NameValuePair
 				map2NVPair(nvps, paramsMap);
 				url = StringUtils.equals(methodType, GET)
-						? new StringBuffer().append(url).append("?")
-								.append(EntityUtils.toString(new UrlEncodedFormEntity(nvps, encoding))).toString()
+						? new StringBuffer().append(url).append("?").append(EntityUtils.toString(new UrlEncodedFormEntity(nvps, encoding))).toString()
 						: url;
 			}
 			// log.info("请求地址：" + url);
@@ -147,8 +146,7 @@ public class HttpUtil {
 				case CONTENT_TYPE_XML:
 					String xmlString = FormatUtil.map2Xml(paramsMap);
 					log.info("请求参数：" + xmlString.toString());
-					((HttpEntityEnclosingRequestBase) httpRequest)
-							.setEntity(new StringEntity(xmlString, CharSets.UTF8));
+					((HttpEntityEnclosingRequestBase) httpRequest).setEntity(new StringEntity(xmlString, CharSets.UTF8));
 					break;
 				case CONTENT_TYPE_URLENCODED:
 					log.info("请求参数：" + nvps.toString());
@@ -176,8 +174,7 @@ public class HttpUtil {
 		CloseableHttpResponse response = null;
 		CloseableHttpClient httpClient = null;
 		if (openSSL) {
-			httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory())
-					.setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();
+			httpClient = HttpClients.custom().setSSLSocketFactory(createSSLConnSocketFactory()).setConnectionManager(connMgr).setDefaultRequestConfig(requestConfig).build();
 			log.info("执行SSL安全连接");
 		} else {
 			httpClient = HttpClients.createDefault();

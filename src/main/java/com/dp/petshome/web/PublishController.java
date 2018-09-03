@@ -1,19 +1,21 @@
 package com.dp.petshome.web;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.dp.petshome.enums.HttpStatus;
 import com.dp.petshome.persistence.dto.HttpResult;
@@ -22,6 +24,8 @@ import com.dp.petshome.persistence.model.Broadcast;
 import com.dp.petshome.service.ActivityService;
 import com.dp.petshome.service.BroadcastService;
 import com.dp.petshome.utils.DateUtil;
+import com.dp.petshome.utils.FormatUtil;
+import com.dp.petshome.utils.ImageUtil;
 import com.dp.petshome.utils.PropertyUtil;
 
 /**
@@ -40,62 +44,74 @@ public class PublishController {
 	@Autowired
 	protected BroadcastService broadcastService;
 
-	private static final String UPLOAD_ROOT_URL = PropertyUtil.getProperty("domain", "http://www.whatu1.com") + "/img/";
-	// private static final String UPLOAD_ROOT_URL = "http://192.168.0.106/dp-img/";
+	private static final String FILE_PATH = PropertyUtil.getProperty("path.img", "/www/server/dp-petshome-web/img") + "/";
 
 	/**
 	 * @Dsecription 發佈活動消息
 	 */
 	@PostMapping(value = "publishActivity")
 	@ResponseBody
-	public HttpResult<Object> publishActivity(@RequestParam(value = "img_file", required = false) MultipartFile imgFile, @RequestParam(value = "activity_theme") String theme,
-			@RequestParam(value = "pickdate") String date, @RequestParam(value = "picktime") String time, @RequestParam(value = "activity_address") String address,
-			@RequestParam(value = "activity_detail") String detail, HttpServletRequest request, HttpServletResponse response) {
+	public HttpResult<Object> publishActivity(HttpServletRequest request, HttpServletResponse response) {
 
 		HttpResult<Object> result = new HttpResult<Object>();
 
+		String theme = request.getParameter("activity_theme");
+		String date = request.getParameter("pickdate");
+		String time = request.getParameter("picktime");
+		String address = request.getParameter("activity_address");
+		String richText = request.getParameter("richText");
+		StringBuffer sb = new StringBuffer();
+		String datetime = sb.append(date).append(" ").append(time).toString();
+		log.info("活动主题: {}, 活动时间: {}, 活动地址: {}, 活动详情: {}", theme, datetime, address, richText);
+
 		Activity activity = new Activity();
-
-		String fullPath = "";
+		StringBuffer urls = null;
 		try {
-			// 先判断文件是否为空
-			if (!imgFile.isEmpty()) {
+			// 解析並替換base64碼
+			String[] srcs = StringUtils.substringsBetween(richText, "src=\"", "\"");
+			if (null != srcs) {
+				urls = new StringBuffer();
+				for (int i = 0; i < srcs.length; i++) {
+					String[] temp = StringUtils.split(srcs[i], ",");
+					richText = StringUtils.replace(richText, srcs[i], "placeholder");
+					String fileName = StringUtils.remove(UUID.randomUUID().toString(), "-") + StringUtils.substringsBetween(richText, "data-filename=\"", "\"")[0];
+					String url = PropertyUtil.getProperty("domain.img", "http://www.whatu1.com/img") + "/thumb_" + fileName;
+					urls = i == srcs.length - 1 ? urls.append(url) : urls.append(url).append(",");
+					richText = StringUtils.replace(richText, "placeholder", url);
+					// base64流轉圖片
+					// 获取图片宽度
+					String width = StringUtils.substringsBetween(richText, "width: ", "px")[0];
+					log.info("上传图片的宽度: {}", Integer.valueOf(width));
+					if (Integer.valueOf(width) > 300) {
+						richText = StringUtils.replace(richText, width + "px", "300px");
+					}
+					Map<Integer, Map<String, Object>> params = new HashMap<>();
+					Map<String, Object> param = new HashMap<>();
+					param.put(ImageUtil.RATIO, 0.6);
+					params.put(ImageUtil.SCALE, param);
+					final File file = FormatUtil.base64ToFile(temp[1], FILE_PATH, fileName, params);
 
-				// 获得原始文件名
-				String fileName = imgFile.getOriginalFilename();
-				long fileSize = imgFile.getSize();
-				log.info("上傳活動圖片 原始文件名: {}, 文件大小: {}", fileName, fileSize);
-
-				// 重命名文件
-				String newFileName = System.currentTimeMillis() + fileName.toLowerCase();
-				log.info("上傳活動圖片 新文件名: {}", newFileName);
-
-				// 获得物理路径webapps所在路径
-				String rootPath = "/www/server/dp-petshome-web/img/";
-				fullPath = rootPath + newFileName;
-				log.info("文件 {} 上傳的完整路徑: {} ", newFileName, fullPath);
-
-				// 创建文件实例
-				File tempFile = new File(fullPath);
-				// 判断父级目录是否存在，不存在则创建
-				if (!tempFile.getParentFile().exists()) {
-					tempFile.getParentFile().mkdir();
+					// 创建压缩文件
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							ImageUtil.createThumb(file, params);
+						}
+					}).start();
 				}
-				// 判断文件是否存在，否则创建文件（夹）
-				if (!tempFile.exists()) {
-					tempFile.mkdir();
-				}
-				// 将接收的文件保存到指定文件中
-				imgFile.transferTo(tempFile);
-				activity.setImg(UPLOAD_ROOT_URL + newFileName);
+				// 刪除活動的時候要用到img字段
+				activity.setImg(urls.toString());
 			}
-			activity.setTheme(theme);
+			log.info("最终的richText: {}", richText);
 
-			StringBuffer sb = new StringBuffer();
-			String datetime = sb.append(date).append(" ").append(time).toString();
+			activity.setTheme(theme);
 			activity.setDate(DateUtil.dateStrToTimestamp(datetime, DateUtil.LONGFMT16));
 			activity.setAddress(address);
-			activity.setDetail(detail);
+			// 第一句话（第一个句号或换行为止）将作为首页展示的副标题
+			String deputy = "活动详情~ " + StringUtils.substringsBetween(richText, ">", "<")[0];
+			activity.setDeputy(deputy);
+			activity.setDetail(richText);
+
 			Integer publishActivityResult = activityService.publishActivity(activity);
 			if (0 < publishActivityResult) {
 				log.info("新增活動成功: {}", publishActivityResult);
