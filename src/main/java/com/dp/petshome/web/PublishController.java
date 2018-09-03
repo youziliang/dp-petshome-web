@@ -79,12 +79,6 @@ public class PublishController {
 					urls = i == srcs.length - 1 ? urls.append(url) : urls.append(url).append(",");
 					richText = StringUtils.replace(richText, "placeholder", url);
 					// base64流轉圖片
-					// 获取图片宽度
-					String width = StringUtils.substringsBetween(richText, "width: ", "px")[0];
-					log.info("上传图片的宽度: {}", Integer.valueOf(width));
-					if (Integer.valueOf(width) > 300) {
-						richText = StringUtils.replace(richText, width + "px", "300px");
-					}
 					Map<Integer, Map<String, Object>> params = new HashMap<>();
 					Map<String, Object> param = new HashMap<>();
 					param.put(ImageUtil.RATIO, 0.6);

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +51,14 @@ public class TempServiceImplTest extends BaseJunitTest {
 		System.out.println(file.getPath());
 		System.out.println(file.getParent());
 		System.out.println(file.getName());
+	}
+
+	@Test
+	public void testExtractNumber() throws IOException {
+		String str = "style='width: 338px; float: left;' class='note-float-left'";
+		String regEx="[^\\d]"; 
+		Pattern patternp = Pattern.compile(regEx);
+		Matcher matcher = patternp.matcher(str);
+		System.out.println("截取出的數字為：" + matcher.replaceAll("").trim());
 	}
 }
