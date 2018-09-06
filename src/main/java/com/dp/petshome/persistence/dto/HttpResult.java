@@ -2,7 +2,7 @@ package com.dp.petshome.persistence.dto;
 
 public class HttpResult<T> {
 	/**
-	 * 是否成功标识 0-失败 1-成功 2-異常 3-未登錄 4-餘額不足
+	 * 是否成功标识 0-失败 1-成功 2-異常 3-未登錄 4-餘額不足 5-已参加（活动等）
 	 */
 	private Integer status;
 	/**

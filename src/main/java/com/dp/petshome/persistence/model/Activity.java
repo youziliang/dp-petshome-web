@@ -17,6 +17,8 @@ public class Activity implements Serializable {
     private String detail;
 
     private String img;
+    
+    private String signUp;
 
     private Date createTime;
 
@@ -80,7 +82,15 @@ public class Activity implements Serializable {
         this.img = img == null ? null : img.trim();
     }
 
-    public Date getCreateTime() {
+    public String getSignUp() {
+		return signUp;
+	}
+
+	public void setSignUp(String signUp) {
+		this.signUp = signUp;
+	}
+
+	public Date getCreateTime() {
         return createTime;
     }
 
@@ -98,7 +108,8 @@ public class Activity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Activity [id=" + id + ", theme=" + theme + ", deputy=" + deputy + ", date=" + date + ", address=" + address + ", detail=" + detail + ", img=" + img
-				+ ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
+		return "Activity [id=" + id + ", theme=" + theme + ", deputy=" + deputy + ", date=" + date + ", address=" + address + ", detail=" + detail + ", img=" + img + ", signUp="
+				+ signUp + ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
 	}
+
 }

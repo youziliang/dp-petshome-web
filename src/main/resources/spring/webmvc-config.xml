@@ -91,6 +91,7 @@
 			<mvc:mapping path="/order/reservate" />
 			<mvc:mapping path="/user/addAddition" />
 			<mvc:mapping path="/order/getOrders" />
+			<mvc:mapping path="/activity/signUp" />
 			<bean class="com.dp.petshome.interceptor.LoginInterceptor"></bean>
 		</mvc:interceptor>
 

@@ -23,4 +23,14 @@ public class ActivityServiceImpl implements ActivityService {
 		return activityMapper.selectByPrimaryKey(id);
 	}
 
+	@Override
+	public String getSignUpUserById(Integer id) {
+		return activityMapper.selectSignUpUserByPrimaryKey(id);
+	}
+
+	@Override
+	public int signUp(Integer activityId, Integer userId) {
+		return activityMapper.updateSignUpByPrimaryKey(activityId, userId);
+	}
+
 }

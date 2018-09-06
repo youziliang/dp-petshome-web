@@ -10,10 +10,10 @@ public enum OrderStatus {
 
 	public Integer status;
 
-	public String msg;
+	public String desc;
 
-	OrderStatus(Integer status, String msg) {
+	OrderStatus(Integer status, String desc) {
 		this.status = status;
-		this.msg = msg;
+		this.desc = desc;
 	}
 }

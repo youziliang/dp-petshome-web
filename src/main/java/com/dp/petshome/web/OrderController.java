@@ -2,7 +2,6 @@ package com.dp.petshome.web;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -85,19 +84,14 @@ public class OrderController {
 					return result;
 				}
 			}
-			String pickdate = request.getParameter("pickdate");
-			String picktime = request.getParameter("picktime");
+			String datetime = request.getParameter("datetime");
 			String people = request.getParameter("order_people");
 			String remark = request.getParameter("order_remark");
 			Order order = new Order();
-			String[] pickdates = StringUtils.split(pickdate, " ");
-			String[] picktimes = StringUtils.split(picktime, " ");
-			StringBuffer sb = new StringBuffer();
-			String date = sb.append(pickdates[0]).append(" ").append(picktimes[0]).toString();
 			// 新增訂單
-			order.setId(DateUtil.getNowDateStr(DateUtil.SHORTFMTD8) + "_" + UUID.randomUUID().toString().substring(0, 8));
+			order.setId(DateUtil.getNowDateStr(DateUtil.SHORTFMTD8) + (int) (Math.random() * 8999) + 1001);
 			order.setOpenid(openid);
-			order.setDate(DateUtil.dateStrToTimestamp(date, DateUtil.LONGFMT16));
+			order.setDate(DateUtil.dateStrToTimestamp(datetime, DateUtil.LONGFMT16));
 			order.setCount(Integer.valueOf(people));
 			order.setSuitId(Integer.valueOf(suitId));
 			order.setPayment(StringUtils.equals("0", payment) ? false : true);
@@ -159,7 +153,7 @@ public class OrderController {
 		String orderId = request.getParameter("orderId");
 		try {
 			int cancelResult = orderService.cancelByOrderId(orderId);
-			log.info("預約订单" + orderId + "取消结果: {}", cancelResult);
+			log.info("預約订单: " + orderId + "取消结果: {}", cancelResult);
 			if (cancelResult > 0) {
 				result.setStatus(HttpStatus.SUCCESS.status);
 			} else {

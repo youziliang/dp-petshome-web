@@ -10,7 +10,9 @@ public enum HttpStatus {
 
 	NOLOGIN(3, "未登錄"),
 
-	NOBALANCE(4, "餘額不足");
+	NOBALANCE(4, "餘額不足"),
+
+	HAVEDONE(5, "已完成");
 
 	public Integer status;
 

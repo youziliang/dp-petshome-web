@@ -2,6 +2,8 @@ package com.dp.petshome.persistence.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.dp.petshome.persistence.model.Activity;
 
 public interface ActivityMapper {
@@ -16,4 +18,8 @@ public interface ActivityMapper {
 	int updateByPrimaryKey(Activity record);
 
 	List<Activity> selectByNoPerformance();
+
+	String selectSignUpUserByPrimaryKey(Integer id);
+
+	int updateSignUpByPrimaryKey(@Param("id") Integer id, @Param("userId") Integer userId);
 }
