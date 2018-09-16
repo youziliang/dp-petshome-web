@@ -2,8 +2,10 @@ package com.dp.petshome.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +16,7 @@ import org.springframework.cache.Cache.ValueWrapper;
 
 import com.dp.petshome.utils.EhCacheUtil;
 import com.dp.petshome.utils.ImageUtil;
+
 
 public class TempServiceImplTest extends BaseJunitTest {
 
@@ -56,9 +59,15 @@ public class TempServiceImplTest extends BaseJunitTest {
 	@Test
 	public void testExtractNumber() throws IOException {
 		String str = "style='width: 338px; float: left;' class='note-float-left'";
-		String regEx="[^\\d]"; 
+		String regEx = "[^\\d]";
 		Pattern patternp = Pattern.compile(regEx);
 		Matcher matcher = patternp.matcher(str);
 		System.out.println("截取出的數字為：" + matcher.replaceAll("").trim());
+	}
+
+	@Test
+	public void testConcurrentHashMap() {
+		AbstractMap<Object, Object> map = new ConcurrentHashMap<>();
+		map.put("test", "test");
 	}
 }
