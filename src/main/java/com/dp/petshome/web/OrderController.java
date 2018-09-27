@@ -2,6 +2,7 @@ package com.dp.petshome.web;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +27,7 @@ import com.dp.petshome.persistence.vo.OrderVo;
 import com.dp.petshome.service.OrderService;
 import com.dp.petshome.service.SuitService;
 import com.dp.petshome.service.UserService;
+import com.dp.petshome.service.WechatService;
 import com.dp.petshome.utils.CookieUtil;
 import com.dp.petshome.utils.DateUtil;
 import com.dp.petshome.utils.EhCacheUtil;
@@ -53,6 +56,12 @@ public class OrderController {
 
 	@Autowired
 	protected UserService userService;
+
+	@Autowired
+	protected WechatService wechatService;
+
+	@Value("${wechat.appid}")
+	private String appid;
 
 	/**
 	 * @Description 新增用戶預約
@@ -202,7 +211,7 @@ public class OrderController {
 	}
 
 	/**
-	 * @Description 預約前檢查是否登陸和是否注冊了手機號
+	 * @Description 預約前檢查
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "checkBeforeReservation")
@@ -216,16 +225,52 @@ public class OrderController {
 		// 處於登陸狀態
 		HashMap<String, String> importances = (HashMap<String, String>) ehCacheUtil.get(USER_CACHE, userId);
 		String openid = null != importances ? importances.get("openid") : null;
-		// 判断是否完善手机号
+		// 判断是否實名或完善手机号
 		User user = userService.getUserByOpenid(openid);
+		log.info("預約前檢查獲取的用戶信息: {}", user);
+
+		if (null == user) {
+			// 首次直接進入order頁面，用戶信息還未寫入數據庫（正常在進入mine頁面時寫入），此時獲取一次用戶信息
+			String access_token = importances.get("access_token");
+			String refresh_token = importances.get("refresh_token");
+			log.info("缓存中的的 access_token: {}, openid: {},  refresh_token: {}", access_token, openid, refresh_token);
+
+			if (StringUtils.isNotBlank(access_token) && StringUtils.isNotBlank(openid) && StringUtils.isNotBlank(refresh_token)) {
+				// 通过緩存的access_token和openid获取用户信息
+				Map<String, Object> userInfo = wechatService.getUserInfoByAccessTokenAndOpenid(access_token, openid);
+				// 檢驗access_token是否還有效
+				if (userInfo.containsKey("errcode")) {
+					log.info("獲取用戶信息失敗: {}", userInfo.get("errcode"));
+
+					// 這裏暫不做具體判斷，一律按access_key過期處理
+					Map<String, String> refreshMap = wechatService.refreshAccessToken(appid, refresh_token);
+					String access_token_refresh = refreshMap.get("access_token");
+					String openid_refresh = refreshMap.get("openid");
+					String refresh_token_refresh = refreshMap.get("refresh_token");
+
+					// 將刷新后的access_token和openid、refresh_token存入ehcache
+					HashMap<String, String> aof = new HashMap<>();
+					aof.put("access_token", access_token_refresh);
+					aof.put("openid", openid_refresh);
+					aof.put("refresh_token", refresh_token_refresh);
+					ehCacheUtil.set(USER_CACHE, userId, aof);
+
+					userInfo = wechatService.getUserInfoByAccessTokenAndOpenid(access_token_refresh, openid_refresh);
+				}
+				user = (User) userInfo.get("user");
+			}
+		}
 		if (null != user) {
-			if (StringUtils.isBlank(user.getName()) && 11 != user.getTel().length()) {
+			String name = user.getName();
+			String tel = user.getTel();
+			log.info("預約前檢查 獲取用戶后 用戶的實名: {}, 電話: {}", name, tel);
+			if (StringUtils.isBlank(name) && (null == tel || 11 != tel.length())) {
 				result.setStatus(HttpStatus.FAIL.status);
 				result.setMsg("AIN");
-			} else if (StringUtils.isBlank(user.getName()) && 11 == user.getTel().length()) {
+			} else if (StringUtils.isBlank(name) && (null != tel && 11 == tel.length())) {
 				result.setStatus(HttpStatus.FAIL.status);
 				result.setMsg("NIN");
-			} else if (StringUtils.isNotBlank(user.getName()) && 11 != user.getTel().length()) {
+			} else if (StringUtils.isNotBlank(name) && (null == tel || 11 != tel.length())) {
 				result.setStatus(HttpStatus.FAIL.status);
 				result.setMsg("TIN");
 			} else {
