@@ -29,7 +29,7 @@
       )
     values (#{id,jdbcType=INTEGER}, #{theme,jdbcType=VARCHAR}, #{deputy,jdbcType=VARCHAR}, 
       #{date,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, 
-      #{img,jdbcType=VARCHAR}, #{sign_up,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{img,jdbcType=VARCHAR}, #{signUp,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.dp.petshome.persistence.model.Activity">
@@ -56,7 +56,7 @@
       <if test="img != null">
         img,
       </if>
-      <if test="sign_up != null">
+      <if test="signUp != null">
         sign_up,
       </if>
       <if test="createTime != null">
@@ -140,7 +140,7 @@
       address = #{address,jdbcType=VARCHAR},
       detail = #{detail,jdbcType=VARCHAR},
       img = #{img,jdbcType=VARCHAR},
-      signUp = #{signUp,jdbcType=VARCHAR},
+      sign_up = #{signUp,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
