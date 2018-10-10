@@ -105,7 +105,8 @@ public class PublishController {
 			String deputy = "活动详情~ " + StringUtils.substringsBetween(richText, ">", "<")[0];
 			activity.setDeputy(deputy);
 			activity.setDetail(richText);
-			activity.setSignUp("o2eGbv8naojpaQ2eQ9Ngg2a7hOpg");
+			// 初始活动默认黄珏已报名参加
+			activity.setSignUp("2");
 
 			Integer publishActivityResult = activityService.publishActivity(activity);
 			if (0 < publishActivityResult) {

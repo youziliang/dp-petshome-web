@@ -125,7 +125,7 @@ public class ActivityController {
 			result.setStatus(HttpStatus.SUCCESS.status);
 			result.setData(list);
 		} catch (Exception e) {
-			log.error("报名活动异常: {}", e);
+			log.error("加載已報名用戶异常: {}", e);
 			result.setStatus(HttpStatus.EXCEPTION.status);
 		}
 		return result;
