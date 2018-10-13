@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dp.petshome.enums.HttpStatus;
 import com.dp.petshome.persistence.dto.HttpResult;
+import com.dp.petshome.persistence.model.Activity;
 import com.dp.petshome.persistence.model.User;
 import com.dp.petshome.service.ActivityService;
 import com.dp.petshome.service.UserService;
@@ -64,8 +65,8 @@ public class ActivityController {
 			User user = userService.getUserByOpenid(openid);
 			Integer userId = user.getId();
 
-			String signUp = activityService.getSignUpUserById(Integer.valueOf(activityId));
-			String[] userIds = StringUtils.split(signUp, ",");
+			String signUpUsers = activityService.getSignUpUsersById(Integer.valueOf(activityId));
+			String[] userIds = StringUtils.split(signUpUsers, ",");
 			for (String uid : userIds) {
 				if (userId.intValue() == Integer.valueOf(uid).intValue()) {
 					result.setStatus(HttpStatus.HAVEDONE.status);
@@ -87,6 +88,28 @@ public class ActivityController {
 	}
 
 	/**
+	 * @Description 加载活动详情
+	 */
+	@GetMapping(value = "loadActivityDesc")
+	@ResponseBody
+	public HttpResult<Object> loadActivityDesc(HttpServletRequest request, HttpServletResponse response) {
+		HttpResult<Object> result = new HttpResult<>();
+
+		try {
+			String activityId = request.getParameter("activityId");
+			Activity activity = activityService.getActivityById(Integer.valueOf(activityId));
+			String detail = activity.getDetail();
+			log.info("活動: {} 的详情: {}", activityId, detail);
+			result.setStatus(HttpStatus.SUCCESS.status);
+			result.setData(detail);
+		} catch (Exception e) {
+			log.error("加载活动详情异常: {}", e);
+			result.setStatus(HttpStatus.EXCEPTION.status);
+		}
+		return result;
+	}
+
+	/**
 	 * @Description 加載已報名用戶
 	 */
 	@SuppressWarnings("unchecked")
@@ -101,8 +124,8 @@ public class ActivityController {
 			HashMap<String, String> importances = (HashMap<String, String>) ehCacheUtil.get(USER_CACHE, tempUserId);
 
 			String activityId = request.getParameter("activityId");
-			String signUp = activityService.getSignUpUserById(Integer.valueOf(activityId));
-			String[] userIds = StringUtils.split(signUp, ",");
+			String signUpUsers = activityService.getSignUpUsersById(Integer.valueOf(activityId));
+			String[] userIds = StringUtils.split(signUpUsers, ",");
 
 			if (null != importances && 0 == userService.getUserByOpenid(importances.get("openid")).getRole()) {
 				// 登陸狀態并且是管理員管理員可以看到全手機號

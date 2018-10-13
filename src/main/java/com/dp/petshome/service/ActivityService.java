@@ -12,8 +12,10 @@ public interface ActivityService {
 
 	Activity getActivityInfoById(Integer id);
 
-	String getSignUpUserById(Integer id);
+	String getSignUpUsersById(Integer id);
 
 	int signUp(Integer activityId, Integer userId);
+
+	Activity getActivityById(Integer valueOf);
 
 }

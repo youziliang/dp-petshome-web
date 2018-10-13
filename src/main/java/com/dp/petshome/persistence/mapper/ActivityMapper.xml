@@ -148,7 +148,7 @@
     
   <select id="selectByNoPerformance" resultMap="BaseResultMap">
     select 
-    <include refid="Base_Column_List" />
+    id, theme, deputy, date, address
     from t_activity
     where date > unix_timestamp(now()) * 1000
   </select>

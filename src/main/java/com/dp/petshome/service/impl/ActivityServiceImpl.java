@@ -24,13 +24,18 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 
 	@Override
-	public String getSignUpUserById(Integer id) {
+	public String getSignUpUsersById(Integer id) {
 		return activityMapper.selectSignUpUserByPrimaryKey(id);
 	}
 
 	@Override
 	public int signUp(Integer activityId, Integer userId) {
 		return activityMapper.updateSignUpByPrimaryKey(activityId, userId);
+	}
+
+	@Override
+	public Activity getActivityById(Integer id) {
+		return activityMapper.selectByPrimaryKey(id);
 	}
 
 }
