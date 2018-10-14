@@ -5,7 +5,8 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="theme" jdbcType="VARCHAR" property="theme" />
     <result column="deputy" jdbcType="VARCHAR" property="deputy" />
-    <result column="date" jdbcType="BIGINT" property="date" />
+    <result column="start_time" jdbcType="BIGINT" property="startTime" />
+    <result column="end_time" jdbcType="BIGINT" property="endTime" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="detail" jdbcType="VARCHAR" property="detail" />
     <result column="img" jdbcType="VARCHAR" property="img" />
@@ -14,7 +15,8 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, theme, deputy, date, address, detail, img, sign_up, create_time, update_time
+    id, theme, deputy, start_time, end_time, address, detail, img, sign_up, create_time, 
+    update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -24,13 +26,13 @@
   </select>
   <insert id="insert" parameterType="com.dp.petshome.persistence.model.Activity">
     insert into t_activity (id, theme, deputy, 
-      date, address, detail, 
-      img, sign_up, create_time, update_time
-      )
+      start_time, end_time, address, 
+      detail, img, sign_up, 
+      create_time, update_time)
     values (#{id,jdbcType=INTEGER}, #{theme,jdbcType=VARCHAR}, #{deputy,jdbcType=VARCHAR}, 
-      #{date,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, 
-      #{img,jdbcType=VARCHAR}, #{signUp,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
-      )
+      #{startTime,jdbcType=BIGINT}, #{endTime,jdbcType=BIGINT}, #{address,jdbcType=VARCHAR}, 
+      #{detail,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, #{signUp,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.dp.petshome.persistence.model.Activity">
     insert into t_activity
@@ -44,8 +46,11 @@
       <if test="deputy != null">
         deputy,
       </if>
-      <if test="date != null">
-        date,
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
       </if>
       <if test="address != null">
         address,
@@ -76,8 +81,11 @@
       <if test="deputy != null">
         #{deputy,jdbcType=VARCHAR},
       </if>
-      <if test="date != null">
-        #{date,jdbcType=BIGINT},
+      <if test="startTime != null">
+        #{startTime,jdbcType=BIGINT},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=BIGINT},
       </if>
       <if test="address != null">
         #{address,jdbcType=VARCHAR},
@@ -108,8 +116,11 @@
       <if test="deputy != null">
         deputy = #{deputy,jdbcType=VARCHAR},
       </if>
-      <if test="date != null">
-        date = #{date,jdbcType=BIGINT},
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=BIGINT},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=BIGINT},
       </if>
       <if test="address != null">
         address = #{address,jdbcType=VARCHAR},
@@ -136,7 +147,8 @@
     update t_activity
     set theme = #{theme,jdbcType=VARCHAR},
       deputy = #{deputy,jdbcType=VARCHAR},
-      date = #{date,jdbcType=BIGINT},
+      start_time = #{startTime,jdbcType=BIGINT},
+      end_time = #{endTime,jdbcType=BIGINT},
       address = #{address,jdbcType=VARCHAR},
       detail = #{detail,jdbcType=VARCHAR},
       img = #{img,jdbcType=VARCHAR},
@@ -145,12 +157,12 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
-    
+  
   <select id="selectByNoPerformance" resultMap="BaseResultMap">
     select 
-    id, theme, deputy, date, address
+    id, theme, deputy, start_time, end_time, address, img
     from t_activity
-    where date > unix_timestamp(now()) * 1000
+    where end_time > unix_timestamp(now()) * 1000
   </select>
   
   <select id="selectSignUpUserByPrimaryKey" resultType="java.lang.String">

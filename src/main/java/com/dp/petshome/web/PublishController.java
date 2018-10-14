@@ -56,13 +56,11 @@ public class PublishController {
 		HttpResult<Object> result = new HttpResult<Object>();
 
 		String theme = request.getParameter("activity_theme");
-		String date = request.getParameter("pickdate");
-		String time = request.getParameter("picktime");
+		String startTime = request.getParameter("start_time");
+		String endTime = request.getParameter("end_time");
 		String address = request.getParameter("activity_address");
 		String richText = request.getParameter("richText");
-		StringBuffer sb = new StringBuffer();
-		String datetime = sb.append(date).append(" ").append(time).toString();
-		log.info("活动主题: {}, 活动时间: {}, 活动地址: {}, 活动详情: {}", theme, datetime, address, richText);
+		log.info("活动主题: {}, 活动时间: {}, 活动地址: {}, 活动详情: {}", theme, startTime + "~" + endTime, address, richText);
 
 		Activity activity = new Activity();
 		StringBuffer urls = null;
@@ -99,7 +97,8 @@ public class PublishController {
 			log.info("最终的richText: {}", richText);
 
 			activity.setTheme(theme);
-			activity.setDate(DateUtil.dateStrToTimestamp(datetime, DateUtil.LONGFMT16));
+			activity.setStartTime(DateUtil.dateStrToTimestamp(startTime, DateUtil.LONGFMT16));
+			activity.setEndTime(DateUtil.dateStrToTimestamp(endTime, DateUtil.LONGFMT16));
 			activity.setAddress(address);
 			// 第一句话（第一个句号或换行为止）将作为首页展示的副标题
 			String deputy = "活动详情~ " + StringUtils.substringsBetween(richText, ">", "<")[0];

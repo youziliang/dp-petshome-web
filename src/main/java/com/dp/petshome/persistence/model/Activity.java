@@ -10,14 +10,16 @@ public class Activity implements Serializable {
 
     private String deputy;
 
-    private Long date;
+    private Long startTime;
+
+    private Long endTime;
 
     private String address;
 
     private String detail;
 
     private String img;
-    
+
     private String signUp;
 
     private Date createTime;
@@ -50,12 +52,20 @@ public class Activity implements Serializable {
         this.deputy = deputy == null ? null : deputy.trim();
     }
 
-    public Long getDate() {
-        return date;
+    public Long getStartTime() {
+        return startTime;
     }
 
-    public void setDate(Long date) {
-        this.date = date;
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    public Long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Long endTime) {
+        this.endTime = endTime;
     }
 
     public String getAddress() {
@@ -83,14 +93,14 @@ public class Activity implements Serializable {
     }
 
     public String getSignUp() {
-		return signUp;
-	}
+        return signUp;
+    }
 
-	public void setSignUp(String signUp) {
-		this.signUp = signUp;
-	}
+    public void setSignUp(String signUp) {
+        this.signUp = signUp == null ? null : signUp.trim();
+    }
 
-	public Date getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
@@ -108,8 +118,7 @@ public class Activity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Activity [id=" + id + ", theme=" + theme + ", deputy=" + deputy + ", date=" + date + ", address=" + address + ", detail=" + detail + ", img=" + img + ", signUp="
-				+ signUp + ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
+		return "Activity [id=" + id + ", theme=" + theme + ", deputy=" + deputy + ", startTime=" + startTime + ", endTime=" + endTime + ", address=" + address + ", detail="
+				+ detail + ", img=" + img + ", signUp=" + signUp + ", createTime=" + createTime + ", updateTime=" + updateTime + "]";
 	}
-
 }

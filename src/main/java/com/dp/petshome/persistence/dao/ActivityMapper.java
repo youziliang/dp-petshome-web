@@ -7,16 +7,16 @@ import org.apache.ibatis.annotations.Param;
 import com.dp.petshome.persistence.model.Activity;
 
 public interface ActivityMapper {
-	int insert(Activity record);
+    int insert(Activity record);
 
-	int insertSelective(Activity record);
+    int insertSelective(Activity record);
 
-	Activity selectByPrimaryKey(Integer id);
+    Activity selectByPrimaryKey(Integer id);
 
-	int updateByPrimaryKeySelective(Activity record);
+    int updateByPrimaryKeySelective(Activity record);
 
-	int updateByPrimaryKey(Activity record);
-
+    int updateByPrimaryKey(Activity record);
+    
 	List<Activity> selectByNoPerformance();
 
 	String selectSignUpUserByPrimaryKey(Integer id);
