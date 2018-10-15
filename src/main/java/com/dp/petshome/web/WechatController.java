@@ -23,6 +23,7 @@ import com.dp.petshome.service.UserService;
 import com.dp.petshome.service.WechatService;
 import com.dp.petshome.utils.CookieUtil;
 import com.dp.petshome.utils.EhCacheUtil;
+import com.dp.petshome.utils.PropertyUtil;
 import com.dp.petshome.utils.SignUtil;
 
 /**
@@ -49,9 +50,6 @@ public class WechatController {
 
 	@Autowired
 	protected UserService userService;
-
-	@Value("${wechat.appid}")
-	private String appid;
 
 	/**
 	 * @Description 微信檢查
@@ -111,7 +109,7 @@ public class WechatController {
 					log.info("獲取用戶信息失敗: {}", userInfo.get("errcode"));
 
 					// 這裏暫不做具體判斷，一律按access_key過期處理
-					Map<String, String> refreshMap = wechatService.refreshAccessToken(appid, refresh_token);
+					Map<String, String> refreshMap = wechatService.refreshAccessToken(PropertyUtil.getProperty("wechat.appid", "wx934db3c18fd280f7"), refresh_token);
 					String access_token_refresh = refreshMap.get("access_token");
 					String openid_refresh = refreshMap.get("openid");
 					String refresh_token_refresh = refreshMap.get("refresh_token");
