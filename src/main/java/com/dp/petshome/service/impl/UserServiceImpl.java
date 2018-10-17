@@ -47,4 +47,9 @@ public class UserServiceImpl implements UserService {
 		return userMapper.updateByOpenidSelective(user);
 	}
 
+	@Override
+	public Integer recharge(User user) {
+		return userMapper.updateByOpenidSelective(user);
+	}
+
 }

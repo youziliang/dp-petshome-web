@@ -60,7 +60,7 @@ public class HttpUtil {
 	public static final String PATCH = "Patch";
 	public static final String OPTIONS = "Options";
 
-	public static final String CONTENT_TYPE_XML = "Content-Type: application/xml";
+	public static final String CONTENT_TYPE_XML = "Content-Type: text/xml";
 	public static final String CONTENT_TYPE_URLENCODED = "Content-Type: application/x-www-form-urlencoded";
 	public static final String CONTENT_TYPE_JSON = "Content-Type: application/json";
 

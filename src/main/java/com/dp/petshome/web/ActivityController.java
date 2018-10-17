@@ -93,8 +93,8 @@ public class ActivityController {
 	@GetMapping(value = "loadActivityDesc")
 	@ResponseBody
 	public HttpResult<Object> loadActivityDesc(HttpServletRequest request, HttpServletResponse response) {
+		
 		HttpResult<Object> result = new HttpResult<>();
-
 		try {
 			String activityId = request.getParameter("activityId");
 			Activity activity = activityService.getActivityById(Integer.valueOf(activityId));

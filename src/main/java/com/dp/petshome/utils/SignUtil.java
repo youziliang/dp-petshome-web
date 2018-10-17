@@ -3,6 +3,10 @@ package com.dp.petshome.utils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+
+import com.dp.petshome.enums.CharSets;
 
 /**
  * @Description 簽名校驗工具类
@@ -43,6 +47,19 @@ public class SignUtil {
 		content = null;
 		// 将sha1加密后的字符串可与signature对比，标识该请求来源于微信
 		return tmpStr != null ? tmpStr.equals(signature.toUpperCase()) : false;
+	}
+
+	public static String getWechatSign(final Map<String, Object> data, String secret) {
+		Set<String> keySet = data.keySet();
+		String[] keyArray = keySet.toArray(new String[keySet.size()]);
+		Arrays.sort(keyArray);
+		StringBuilder sb = new StringBuilder();
+		for (String key : keyArray) {
+			if (data.get(key).toString().trim().length() > 0) // 参数值为空，则不参与签名
+				sb.append(key).append("=").append(data.get(key).toString().trim()).append("&");
+		}
+		sb.append("key=").append(secret);
+		return MD5Util.MD5Encode(sb.toString(), CharSets.UTF8);
 	}
 
 	/**

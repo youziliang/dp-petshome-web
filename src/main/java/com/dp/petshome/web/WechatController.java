@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dp.petshome.enums.HttpStatus;
 import com.dp.petshome.persistence.dto.HttpResult;
+import com.dp.petshome.persistence.dto.UnifiedOrder;
 import com.dp.petshome.service.UserService;
 import com.dp.petshome.service.WechatService;
 import com.dp.petshome.utils.CookieUtil;
 import com.dp.petshome.utils.EhCacheUtil;
+import com.dp.petshome.utils.FormatUtil;
 import com.dp.petshome.utils.PropertyUtil;
 import com.dp.petshome.utils.SignUtil;
 
@@ -128,6 +130,7 @@ public class WechatController {
 			}
 		} catch (Exception e) {
 			log.error("加載用戶信息异常: {}", e);
+			result.setStatus(HttpStatus.EXCEPTION.status);
 		}
 		return result;
 	}
@@ -169,6 +172,58 @@ public class WechatController {
 		} catch (Exception e) {
 			log.error("授权回调获取用户信息异常: {}", e);
 		}
+	}
+
+	/**
+	 * @Description 获取预支付信息
+	 */
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "getPrepayInfo")
+	@ResponseBody
+	public HttpResult<Object> getPrepayInfo(HttpServletRequest request, HttpServletResponse response) {
+
+		HttpResult<Object> result = new HttpResult<>();
+
+		// 获取临时用户id
+		String userId = CookieUtil.getCookie(request, USER_ID);
+		// 處於登陸狀態，根据userId获取相应的access_token和openid、refresh_token
+		HashMap<String, String> importances = (HashMap<String, String>) ehCacheUtil.get(USER_CACHE, userId);
+		String openid = importances.get("openid");
+
+		String orderNo = request.getParameter("order_no");
+		String amount = request.getParameter("amount");
+		String commDesc = request.getParameter("comm_desc");
+		String commDetail = request.getParameter("comm_detail");
+
+		UnifiedOrder unifiedOrder = new UnifiedOrder();
+		unifiedOrder.setOrderNo(orderNo);
+		unifiedOrder.setAmount(Integer.valueOf(amount));
+		unifiedOrder.setCommDesc(commDesc);
+		unifiedOrder.setCommDetail(commDetail);
+		unifiedOrder.setOpenid(openid);
+		try {
+			String unifiedOrderResult = wechatService.unifiedOrder(unifiedOrder);
+			Map<String, Object> unifiedOrderRespMap = FormatUtil.xml2Map(unifiedOrderResult);
+			if (StringUtils.equals("SUCCESS", unifiedOrderRespMap.get("return_code").toString()) && StringUtils.equals("OK", unifiedOrderRespMap.get("return_msg").toString())) {
+				Map<String, Object> map = new HashMap<>(5);
+				map.put("package", "prepay_id=" + unifiedOrderRespMap.get("prepay_id").toString());
+				map.put("appId", PropertyUtil.getProperty("wechat.appid"));
+				map.put("nonceStr", StringUtils.replace(UUID.randomUUID().toString(), "-", ""));
+				map.put("signType", "MD5");
+				map.put("timeStamp", String.valueOf(System.currentTimeMillis() / 1000));
+				map.put("paySign", SignUtil.getWechatSign(map, PropertyUtil.getProperty("wechat.secret")).toUpperCase());
+
+				log.info("获取的预支付信息: {}", map);
+				result.setStatus(HttpStatus.SUCCESS.status);
+				result.setData(map);
+			} else {
+				result.setStatus(HttpStatus.FAIL.status);
+			}
+		} catch (Exception e) {
+			log.error("获取预支付信息异常: {}", e);
+			result.setStatus(HttpStatus.EXCEPTION.status);
+		}
+		return result;
 	}
 
 }

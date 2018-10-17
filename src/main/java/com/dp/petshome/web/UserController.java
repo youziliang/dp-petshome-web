@@ -10,12 +10,14 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.dp.petshome.enums.HttpStatus;
 import com.dp.petshome.persistence.dto.HttpResult;
 import com.dp.petshome.persistence.model.User;
@@ -41,6 +43,9 @@ public class UserController {
 
 	@Autowired
 	protected UserService userService;
+
+	@Autowired
+	protected ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
 	/**
 	 * @Description 用戶登陸
@@ -90,7 +95,7 @@ public class UserController {
 		HttpResult<Object> result = new HttpResult<>();
 
 		String userId = CookieUtil.getCookie(request, USER_ID);
-		
+
 		String name = request.getParameter("name");
 		String sex = request.getParameter("sex");
 		String tel = request.getParameter("tel");
@@ -120,4 +125,45 @@ public class UserController {
 		return result;
 	}
 
+	/**
+	 * @Description 用户充值操作
+	 */
+	@SuppressWarnings("unchecked")
+	@PostMapping(value = "recharge")
+	@ResponseBody
+	public HttpResult<Object> recharge(HttpServletRequest request, HttpServletResponse response) {
+
+		HttpResult<Object> result = new HttpResult<>();
+
+		String userId = CookieUtil.getCookie(request, USER_ID);
+		// 處於登陸狀態
+		HashMap<String, String> importances = (HashMap<String, String>) ehCacheUtil.get(USER_CACHE, userId);
+		String openid = null != importances ? importances.get("openid") : null;
+
+		HashMap<String, String> commDetail = JSON.parseObject(request.getParameter("comm_detail"), HashMap.class);
+		// String orderNo = commDetail.get("order_no");
+		String amount = commDetail.get("amount");
+		// String timeStamp = request.getParameter("timeStamp");
+
+		// 更新账户余额
+		User user = userService.getUserByOpenid(openid);
+		user.setBalance(user.getBalance() + Integer.valueOf(amount));
+		Integer rechargeResult = userService.recharge(user);
+		if (0 < rechargeResult) {
+			log.info("用户充值操作成功");
+			result.setStatus(HttpStatus.SUCCESS.status);
+		} else {
+			log.info("用户充值操作失败");
+			result.setStatus(HttpStatus.FAIL.status);
+		}
+		// 记录充值操作
+		/*
+		 * threadPoolTaskExecutor.execute(new Runnable() {
+		 * 
+		 * @Override public void run() { // TODO Auto-generated method stub
+		 * 
+		 * } });
+		 */
+		return result;
+	}
 }

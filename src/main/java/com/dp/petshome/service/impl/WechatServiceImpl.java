@@ -1,9 +1,12 @@
 package com.dp.petshome.service.impl;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.dp.petshome.enums.CharSets;
 import com.dp.petshome.enums.OrderStatus;
+import com.dp.petshome.persistence.dto.UnifiedOrder;
 import com.dp.petshome.persistence.model.User;
 import com.dp.petshome.persistence.vo.OrderVo;
 import com.dp.petshome.service.OrderService;
@@ -27,6 +31,7 @@ import com.dp.petshome.service.UserService;
 import com.dp.petshome.service.WechatService;
 import com.dp.petshome.utils.HttpUtil;
 import com.dp.petshome.utils.PropertyUtil;
+import com.dp.petshome.utils.SignUtil;
 
 /**
  * @Dsecription 微信ServiceImpl
@@ -214,6 +219,42 @@ public class WechatServiceImpl implements WechatService {
 
 		String reqResult = HttpUtil.request("https://api.weixin.qq.com/cgi-bin/token", HttpUtil.GET, params, headers, true);
 		log.info("獲取AccessToken结果: {}", reqResult);
+		return reqResult;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(UUID.randomUUID().toString());
+	}
+
+	/**
+	 * @throws UnknownHostException
+	 * @Description 统一下单
+	 */
+	@Override
+	public String unifiedOrder(UnifiedOrder unifiedOrder) throws UnknownHostException {
+		List<Header> headers = new ArrayList<Header>();
+		headers.add(new BasicHeader(HttpHeaders.CONTENT_TYPE, "text/xml"));
+		headers.add(new BasicHeader(HttpHeaders.ACCEPT_CHARSET, CharSets.UTF8));
+		Map<String, Object> params = new HashMap<>(15);
+		params.put("appid", PropertyUtil.getProperty("wechat.appid"));
+		params.put("mch_id", PropertyUtil.getProperty("wechat.mchid"));
+		params.put("device_info", "xinnanluyihao");
+		params.put("nonce_str", StringUtils.replace(UUID.randomUUID().toString(), "-", ""));
+		params.put("sign_type", "MD5");
+		params.put("out_trade_no", unifiedOrder.getOrderNo());
+		params.put("total_fee", unifiedOrder.getAmount());
+		params.put("body", unifiedOrder.getCommDesc());
+		params.put("detail", unifiedOrder.getCommDetail());
+		params.put("openid", unifiedOrder.getOpenid());
+		params.put("spbill_create_ip", InetAddress.getLocalHost().getHostAddress().toString());
+		params.put("notify_url", PropertyUtil.getProperty("domain") + "/mine.html");
+		params.put("trade_type", "JSAPI");
+		// params.put("attach", "自定义附加参数");
+		log.info("统一下单参数: {}", params);
+		params.put("sign", SignUtil.getWechatSign(params, PropertyUtil.getProperty("wechat.secret")).toUpperCase());
+
+		String reqResult = HttpUtil.request("https://api.mch.weixin.qq.com/pay/unifiedorder", HttpUtil.POST, params, headers);
+		log.info("统一下单结果: {}", reqResult);
 		return reqResult;
 	}
 

@@ -20,4 +20,6 @@ public interface UserService {
 
 	Integer addTelByOpenid(User user);
 
+	Integer recharge(User user);
+
 }

@@ -87,10 +87,12 @@
 		<!-- 登陸攔截器 -->
 		<mvc:interceptor>
 			<mvc:mapping path="/wechat/loadUserInfo" />
+			<mvc:mapping path="/wechat/getPrepayInfo" />
 			<mvc:mapping path="/order/checkBeforeReservation" />
 			<mvc:mapping path="/order/reservate" />
-			<mvc:mapping path="/user/addAddition" />
 			<mvc:mapping path="/order/getOrders" />
+			<mvc:mapping path="/user/addAddition" />
+			<mvc:mapping path="/user/recharge" />
 			<mvc:mapping path="/activity/signUp" />
 			<bean class="com.dp.petshome.interceptor.LoginInterceptor"></bean>
 		</mvc:interceptor>

@@ -1,9 +1,12 @@
 package com.dp.petshome.service;
 
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.dp.petshome.persistence.dto.UnifiedOrder;
 
 /**
  * @Dsecription 微信Service
@@ -22,5 +25,7 @@ public interface WechatService {
 	String getAccessToken(HttpServletRequest request, HttpServletResponse response);
 
 	Map<String, String> refreshAccessToken(String appid, String refresh_token);
+
+	String unifiedOrder(UnifiedOrder unifiedOrder) throws UnknownHostException;
 
 }
