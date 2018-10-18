@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.dp.petshome.enums.HttpStatus;
 import com.dp.petshome.persistence.dto.HttpResult;
+import com.dp.petshome.persistence.model.Record;
 import com.dp.petshome.persistence.model.User;
+import com.dp.petshome.service.RecordService;
 import com.dp.petshome.service.UserService;
 import com.dp.petshome.utils.CookieUtil;
 import com.dp.petshome.utils.EhCacheUtil;
@@ -44,6 +46,9 @@ public class UserController {
 
 	@Autowired
 	protected UserService userService;
+
+	@Autowired
+	protected RecordService recordService;
 
 	@Autowired
 	protected ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -148,6 +153,7 @@ public class UserController {
 
 		// 更新账户余额
 		User user = userService.getUserByOpenid(openid);
+		Double balanceBeforeRecharge = user.getBalance();
 		Double balance = new BigDecimal(user.getBalance()).add(new BigDecimal(Double.valueOf(amount))).doubleValue();
 		user.setBalance(balance);
 		Integer rechargeResult = userService.recharge(user);
@@ -163,6 +169,16 @@ public class UserController {
 		threadPoolTaskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
+				Record record = new Record();
+				record.setUserId(user.getId());
+				record.setAction(0);
+				record.setRecord("{'充值前余额':" + balanceBeforeRecharge + ",'充值后余额':" + balance + "}");
+				int insertResult = recordService.insertRecord(record);
+				if (0 < insertResult) {
+					log.info(user.getId() + "插入操作记录成功");
+				} else {
+					log.info(user.getId() + "插入操作记录失败");
+				}
 
 			}
 		});
