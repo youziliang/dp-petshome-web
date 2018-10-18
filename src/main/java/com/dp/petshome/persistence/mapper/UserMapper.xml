@@ -10,7 +10,7 @@
     <result column="sex" jdbcType="INTEGER" property="sex" />
     <result column="head_img" jdbcType="VARCHAR" property="headImg" />
     <result column="score" jdbcType="INTEGER" property="score" />
-    <result column="balance" jdbcType="INTEGER" property="balance" />
+    <result column="balance" jdbcType="DOUBLE" property="balance" />
     <result column="tel" jdbcType="VARCHAR" property="tel" />
     <result column="country" jdbcType="VARCHAR" property="country" />
     <result column="province" jdbcType="VARCHAR" property="province" />
@@ -37,7 +37,7 @@
       )
     values (#{id,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, 
       #{name,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, 
-      #{headImg,jdbcType=VARCHAR}, #{score,jdbcType=INTEGER}, #{balance,jdbcType=INTEGER}, 
+      #{headImg,jdbcType=VARCHAR}, #{score,jdbcType=INTEGER}, #{balance,jdbcType=DOUBLE}, 
       #{tel,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
       #{city,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
@@ -117,7 +117,7 @@
         #{score,jdbcType=INTEGER},
       </if>
       <if test="balance != null">
-        #{balance,jdbcType=INTEGER},
+        #{balance,jdbcType=DOUBLE},
       </if>
       <if test="tel != null">
         #{tel,jdbcType=VARCHAR},
@@ -164,7 +164,7 @@
         score = #{score,jdbcType=INTEGER},
       </if>
       <if test="balance != null">
-        balance = #{balance,jdbcType=INTEGER},
+        balance = #{balance,jdbcType=DOUBLE},
       </if>
       <if test="tel != null">
         tel = #{tel,jdbcType=VARCHAR},
@@ -196,7 +196,7 @@
       sex = #{sex,jdbcType=INTEGER},
       head_img = #{headImg,jdbcType=VARCHAR},
       score = #{score,jdbcType=INTEGER},
-      balance = #{balance,jdbcType=INTEGER},
+      balance = #{balance,jdbcType=DOUBLE},
       tel = #{tel,jdbcType=VARCHAR},
       country = #{country,jdbcType=VARCHAR},
       province = #{province,jdbcType=VARCHAR},
@@ -235,7 +235,7 @@
         score = #{score,jdbcType=INTEGER},
       </if>
       <if test="balance != null">
-        balance = #{balance,jdbcType=INTEGER},
+        balance = #{balance,jdbcType=DOUBLE},
       </if>
       <if test="tel != null">
         tel = #{tel,jdbcType=VARCHAR},
@@ -266,7 +266,7 @@
         score = #{score,jdbcType=INTEGER},
       </if>
       <if test="balance != null">
-        balance = #{balance,jdbcType=INTEGER},
+        balance = #{balance,jdbcType=DOUBLE},
       </if>
     </set>
     where openid = #{openid,jdbcType=VARCHAR}

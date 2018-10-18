@@ -1,5 +1,6 @@
 package com.dp.petshome.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,19 +124,19 @@ public class OrderServiceImpl implements OrderService {
 		Integer suitid = order.getSuitId();
 
 		Suit suit = suitMapper.selectByPrimaryKey(suitid);
-		Integer price = suit.getPrice();
+		BigDecimal price = new BigDecimal(suit.getPrice());
 		Integer scoreInSuit = suit.getScore();
 
 		User user = userMapper.selectByOpenid(openid);
-		Integer balance = user.getBalance();
+		BigDecimal balance = new BigDecimal(user.getBalance());
 		Integer scoreInDB = user.getScore();
 
 		if (false == order.getPayment()) {
 			// 到店付
-			price = 0;
+			price = new BigDecimal(0.00);
 		}
 		log.info("订单: {} 类型为{}, 需要扣除{}余额, 需要增加{}积分", order.getId(), order.getPayment(), price, scoreInSuit);
-		return userMapper.updateScoreAndBalanceByOpenid(openid, balance - price, scoreInDB + scoreInSuit);
+		return userMapper.updateScoreAndBalanceByOpenid(openid, balance.subtract(price).doubleValue(), scoreInDB + scoreInSuit);
 	}
 
 }

@@ -19,5 +19,5 @@ public interface UserMapper {
 
 	int updateByOpenidSelective(User user);
 
-	int updateScoreAndBalanceByOpenid(@Param("openid") String openid, @Param("balance") Integer balance, @Param("score") Integer score);
+	int updateScoreAndBalanceByOpenid(@Param("openid") String openid, @Param("balance") Double balance, @Param("score") Integer score);
 }

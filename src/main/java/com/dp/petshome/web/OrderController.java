@@ -86,7 +86,7 @@ public class OrderController {
 				Suit suit = suitService.getSuitBySuitId(Integer.valueOf(suitId));
 				Integer price = suit.getPrice();
 				User user = userService.getUserByOpenid(openid);
-				Integer balance = user.getBalance();
+				Double balance = user.getBalance();
 				if (balance < price) {
 					result.setStatus(HttpStatus.NOBALANCE.status);
 					result.setMsg("Insufficient Balance");

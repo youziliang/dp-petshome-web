@@ -1,5 +1,6 @@
 package com.dp.petshome.web;
 
+import java.math.BigDecimal;
 import java.util.Enumeration;
 import java.util.HashMap;
 
@@ -147,7 +148,8 @@ public class UserController {
 
 		// 更新账户余额
 		User user = userService.getUserByOpenid(openid);
-		user.setBalance(user.getBalance() + Integer.valueOf(amount));
+		Double balance = new BigDecimal(user.getBalance()).add(new BigDecimal(Double.valueOf(amount))).doubleValue();
+		user.setBalance(balance);
 		Integer rechargeResult = userService.recharge(user);
 		if (0 < rechargeResult) {
 			log.info("用户充值操作成功");
@@ -157,13 +159,13 @@ public class UserController {
 			result.setStatus(HttpStatus.FAIL.status);
 		}
 		// 记录充值操作
-		/*
-		 * threadPoolTaskExecutor.execute(new Runnable() {
-		 * 
-		 * @Override public void run() { // TODO Auto-generated method stub
-		 * 
-		 * } });
-		 */
+
+		threadPoolTaskExecutor.execute(new Runnable() {
+			@Override
+			public void run() {
+
+			}
+		});
 		return result;
 	}
 }
