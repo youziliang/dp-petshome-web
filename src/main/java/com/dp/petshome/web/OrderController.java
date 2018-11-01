@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +30,7 @@ import com.dp.petshome.service.WechatService;
 import com.dp.petshome.utils.CookieUtil;
 import com.dp.petshome.utils.DateUtil;
 import com.dp.petshome.utils.EhCacheUtil;
+import com.dp.petshome.utils.PropertyUtil;
 
 /**
  * @Dsecription 訂單Controller
@@ -60,11 +60,8 @@ public class OrderController {
 	@Autowired
 	protected WechatService wechatService;
 
-	@Value("${wechat.appid}")
-	private String appid;
-
 	/**
-	 * @Description 新增用戶預約
+	 * @Description 新增用户预约
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "reservate")
@@ -107,7 +104,7 @@ public class OrderController {
 			order.setRemark(remark);
 
 			int reservateResult = orderService.reservate(order);
-			log.info("新增預約结果: {}", reservateResult);
+			log.info("新增预约结果: {}", reservateResult);
 			if (0 < reservateResult) {
 				result.setStatus(HttpStatus.SUCCESS.status);
 				result.setData(order.getId());
@@ -115,14 +112,14 @@ public class OrderController {
 				result.setStatus(HttpStatus.FAIL.status);
 			}
 		} catch (Exception e) {
-			log.error("新增預約异常: {}", e);
+			log.error("新增预约异常: {}", e);
 			result.setStatus(HttpStatus.EXCEPTION.status);
 		}
 		return result;
 	}
 
 	/**
-	 * @Description 獲取訂單
+	 * @Description 获取訂單
 	 */
 	@SuppressWarnings("unchecked")
 	@GetMapping(value = "getOrders")
@@ -132,7 +129,7 @@ public class OrderController {
 		HttpResult<Object> result = new HttpResult<>();
 
 		String isFinished = request.getParameter("status");
-		log.info("獲取狀態為" + isFinished + "的訂單");
+		log.info("获取狀態為" + isFinished + "的訂單");
 		try {
 			// 获取临时用户id
 			String userId = CookieUtil.getCookie(request, USER_ID);
@@ -144,14 +141,14 @@ public class OrderController {
 			result.setStatus(HttpStatus.SUCCESS.status);
 			result.setData(orders);
 		} catch (Exception e) {
-			log.error("獲取訂單异常: {}", e);
+			log.error("获取訂單异常: {}", e);
 			result.setStatus(HttpStatus.EXCEPTION.status);
 		}
 		return result;
 	}
 
 	/**
-	 * @Description 取消用戶預約
+	 * @Description 取消用户预约
 	 */
 	@PostMapping(value = "cancel")
 	@ResponseBody
@@ -162,14 +159,14 @@ public class OrderController {
 		String orderId = request.getParameter("orderId");
 		try {
 			int cancelResult = orderService.cancelByOrderId(orderId);
-			log.info("預約订单: " + orderId + "取消结果: {}", cancelResult);
+			log.info("预约订单: " + orderId + "取消结果: {}", cancelResult);
 			if (cancelResult > 0) {
 				result.setStatus(HttpStatus.SUCCESS.status);
 			} else {
 				result.setStatus(HttpStatus.FAIL.status);
 			}
 		} catch (Exception e) {
-			log.error("取消預約异常: {}", e);
+			log.error("取消预约异常: {}", e);
 			result.setStatus(HttpStatus.EXCEPTION.status);
 		}
 		return result;
@@ -211,7 +208,7 @@ public class OrderController {
 	}
 
 	/**
-	 * @Description 預約前檢查
+	 * @Description 预约前检查
 	 */
 	@SuppressWarnings("unchecked")
 	@PostMapping(value = "checkBeforeReservation")
@@ -227,10 +224,10 @@ public class OrderController {
 		String openid = null != importances ? importances.get("openid") : null;
 		// 判断是否實名或完善手机号
 		User user = userService.getUserByOpenid(openid);
-		log.info("預約前檢查獲取的用戶信息: {}", user);
+		log.info("预约前检查获取的用户信息: {}", user);
 
 		if (null == user) {
-			// 首次直接進入order頁面，用戶信息還未寫入數據庫（正常在進入mine頁面時寫入），此時獲取一次用戶信息
+			// 首次直接進入order頁面，用户信息還未寫入數據庫（正常在進入mine頁面時寫入），此時获取一次用户信息
 			String access_token = importances.get("access_token");
 			String refresh_token = importances.get("refresh_token");
 			log.info("缓存中的的 access_token: {}, openid: {},  refresh_token: {}", access_token, openid, refresh_token);
@@ -240,10 +237,10 @@ public class OrderController {
 				Map<String, Object> userInfo = wechatService.getUserInfoByAccessTokenAndOpenid(access_token, openid);
 				// 檢驗access_token是否還有效
 				if (userInfo.containsKey("errcode")) {
-					log.info("獲取用戶信息失敗: {}", userInfo.get("errcode"));
+					log.info("获取用户信息失败: {}", userInfo.get("errcode"));
 
 					// 這裏暫不做具體判斷，一律按access_key過期處理
-					Map<String, String> refreshMap = wechatService.refreshAccessToken(appid, refresh_token);
+					Map<String, String> refreshMap = wechatService.refreshAccessToken(PropertyUtil.getProperty("wechat.appid"), refresh_token);
 					String access_token_refresh = refreshMap.get("access_token");
 					String openid_refresh = refreshMap.get("openid");
 					String refresh_token_refresh = refreshMap.get("refresh_token");
@@ -263,7 +260,7 @@ public class OrderController {
 		if (null != user) {
 			String name = user.getName();
 			String tel = user.getTel();
-			log.info("預約前檢查 獲取用戶后 用戶的實名: {}, 電話: {}", name, tel);
+			log.info("预约前检查 获取用户后 用户的实名: {}, 电话: {}", name, tel);
 			if (StringUtils.isBlank(name) && (null == tel || 11 != tel.length())) {
 				result.setStatus(HttpStatus.FAIL.status);
 				result.setMsg("AIN");

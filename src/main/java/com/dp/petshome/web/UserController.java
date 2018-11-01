@@ -26,6 +26,7 @@ import com.dp.petshome.persistence.model.User;
 import com.dp.petshome.service.RecordService;
 import com.dp.petshome.service.UserService;
 import com.dp.petshome.utils.CookieUtil;
+import com.dp.petshome.utils.DateUtil;
 import com.dp.petshome.utils.EhCacheUtil;
 
 /**
@@ -154,7 +155,23 @@ public class UserController {
 		// 更新账户余额
 		User user = userService.getUserByOpenid(openid);
 		Double balanceBeforeRecharge = user.getBalance();
-		Double balance = new BigDecimal(user.getBalance()).add(new BigDecimal(Double.valueOf(amount))).doubleValue();
+		Double amountDouble = Double.valueOf(amount);
+		// 万圣节越冲越值活动
+		if (DateUtil.dateStrToTimestamp("2018-11-01 00:00:00", DateUtil.LONGFMT19) < System.currentTimeMillis()
+				&& System.currentTimeMillis() <= DateUtil.dateStrToTimestamp("2018-11-07 23:59:59", DateUtil.LONGFMT19)) {
+			if (amountDouble >= 100.00 && amountDouble < 200.00) {
+				amountDouble += 20.00;
+			} else if (amountDouble >= 200.00 && amountDouble < 300.00) {
+				amountDouble += 50.00;
+			} else if (amountDouble >= 300.00 && amountDouble < 500.00) {
+				amountDouble += 100.00;
+			} else if (amountDouble >= 500.00 && amountDouble < 1000.00) {
+				amountDouble += 200.00;
+			} else if (amountDouble >= 1000.00) {
+				amountDouble += 500.00;
+			}
+		}
+		Double balance = new BigDecimal(user.getBalance()).add(new BigDecimal(amountDouble)).doubleValue();
 		user.setBalance(balance);
 		Integer rechargeResult = userService.recharge(user);
 		if (0 < rechargeResult) {
@@ -165,7 +182,6 @@ public class UserController {
 			result.setStatus(HttpStatus.FAIL.status);
 		}
 		// 记录充值操作
-
 		threadPoolTaskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {

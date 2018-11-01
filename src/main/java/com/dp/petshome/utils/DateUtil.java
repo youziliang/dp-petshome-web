@@ -252,7 +252,7 @@ public class DateUtil {
 	/**
 	 * @Description 获取两个时间之间的天数
 	 */
-	public static long getIntervalOfTwoDays(String date1, String date2) {
+	public static long getDaysBetween(String date1, String date2) {
 		if (date1 == null || "".equals(date1))
 			date1 = getNowDateStr(SHORTFMTD10);
 		if (date2 == null || "".equals(date2))
@@ -273,7 +273,7 @@ public class DateUtil {
 	/**
 	 * @Description 获取两个时间之间的小时数
 	 */
-	public static long getHours(String date1, String date2) {
+	public static long getHoursBetween(String date1, String date2) {
 		if (date1 == null || "".equals(date1))
 			date1 = getNowDateStr(LONGFMT19);
 		if (date2 == null || "".equals(date2))
@@ -294,7 +294,7 @@ public class DateUtil {
 	/**
 	 * @Description 获取两个时间之间的分钟数
 	 */
-	public static long getMinutes(String date1, String date2) {
+	public static long getMinutesBetween(String date1, String date2) {
 		if (date1 == null || "".equals(date1))
 			date1 = getNowDateStr(LONGFMT19);
 		if (date2 == null || "".equals(date2))
@@ -315,7 +315,7 @@ public class DateUtil {
 	/**
 	 * @Description 获取两个时间之间的秒钟数
 	 */
-	public static long getSeconds(String date1, String date2) {
+	public static long getSecondsBetween(String date1, String date2) {
 		if (date1 == null || "".equals(date1))
 			date1 = getNowDateStr(LONGFMT19);
 		if (date2 == null || "".equals(date2))

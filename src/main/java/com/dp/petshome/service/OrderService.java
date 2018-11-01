@@ -26,4 +26,6 @@ public interface OrderService {
 
 	Integer adjustScoreAndBalance(String orderId);
 
+	Order getByOrderId(String orderId);
+
 }
