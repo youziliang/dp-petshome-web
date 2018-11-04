@@ -22,11 +22,17 @@ public class OrderVo implements Serializable {
 
 	private Date updateTime;
 
-	private String nickname;
+	private String name;
 
 	private String tel;
 	
 	private Integer role;
+	
+	private Boolean payment;
+	
+	private Integer price;
+	
+	private Double balance;
 
 	private static final long serialVersionUID = 1L;
 
@@ -102,12 +108,12 @@ public class OrderVo implements Serializable {
 		this.updateTime = updateTime;
 	}
 
-	public String getNickname() {
-		return nickname;
+	public String getName() {
+		return name;
 	}
 
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getTel() {
@@ -126,10 +132,35 @@ public class OrderVo implements Serializable {
 		this.role = role;
 	}
 
+	public Boolean getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Boolean payment) {
+		this.payment = payment;
+	}
+
+	public Integer getPrice() {
+		return price;
+	}
+
+	public void setPrice(Integer price) {
+		this.price = price;
+	}
+
+	public Double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Double balance) {
+		this.balance = balance;
+	}
+
 	@Override
 	public String toString() {
-		return "OrderVo [id=" + id + ", openid=" + openid + ", date=" + date + ", count=" + count + ", suitName="
-				+ suitName + ", remark=" + remark + ", status=" + status + ", createTime=" + createTime
-				+ ", updateTime=" + updateTime + ", nickname=" + nickname + ", tel=" + tel + ", role=" + role +"]";
+		return "OrderVo [id=" + id + ", openid=" + openid + ", date=" + date + ", count=" + count + ", suitName=" + suitName + ", remark=" + remark + ", status=" + status
+				+ ", createTime=" + createTime + ", updateTime=" + updateTime + ", name=" + name + ", tel=" + tel + ", role=" + role + ", payment=" + payment + ", price=" + price
+				+ ", balance=" + balance + "]";
 	}
+
 }

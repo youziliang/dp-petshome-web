@@ -113,13 +113,16 @@ public class OrderServiceImpl implements OrderService {
 			orderVo.setOpenid(order.getOpenid());
 			orderVo.setDate(order.getDate());
 			orderVo.setCount(order.getCount());
+			orderVo.setPayment(order.getPayment());
 
-			String suitName = suitMapper.selectNameByPrimaryKey(order.getSuitId());
-			orderVo.setSuitName(suitName);
+			Suit suit = suitMapper.selectByPrimaryKey(order.getSuitId());
+			orderVo.setSuitName(suit.getName());
+			orderVo.setPrice(suit.getPrice());
 			orderVo.setRemark(order.getRemark());
 			orderVo.setStatus(order.getStatus());
-			orderVo.setNickname(tempUser.getNickname());
+			orderVo.setName(tempUser.getName());
 			orderVo.setTel(tempUser.getTel());
+			orderVo.setBalance(tempUser.getBalance());
 			orderVo.setRole(user.getRole());
 			orderList.add(orderVo);
 		}
